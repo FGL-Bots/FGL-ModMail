@@ -114,12 +114,15 @@ module.exports = ({ bot, knex, config, commands }) => {
   });
 
   commands.addInboxServerCommand('edit_snippet', '<trigger> [text$]', async (msg, args, thread) => {
+   if(! args.text) { 
+      utils.postSystemMessageWithFallback(msg.channel, thread, `Snippet "${args.trigger}" cannot be empty`); 
+      return;
+    }
     const snippet = await snippets.get(args.trigger);
     if (! snippet) {
       utils.postSystemMessageWithFallback(msg.channel, thread, `Snippet "${args.trigger}" doesn't exist!`);
       return;
     }
-
     await snippets.del(args.trigger);
     await snippets.add(args.trigger, args.text, msg.author.id);
 

@@ -8,7 +8,7 @@ const {messageQueue} = require('./queue');
 const utils = require('./utils');
 const { createCommandManager } = require('./commands');
 const { getPluginAPI, loadPlugin } = require('./plugins');
-
+const fs = require('fs');
 const blocked = require('./data/blocked');
 const threads = require('./data/threads');
 const updates = require('./data/updates');
@@ -117,8 +117,15 @@ function initBaseMessageHandlers() {
     if (msg.author.bot) return;
     if (msg.type !== 0) return; // Ignore pins etc.
 
-    if (await blocked.isBlocked(msg.author.id)) return;
-
+    if (await blocked.isBlocked(msg.author.id)) {
+    	await msg.channel.createMessage("**You have been blocked from FGL Mod Mail.**\nPlease either wait out the block if it isn't urgent or use modcall if it is. If you have a permanent block, DM a Bot Admin or higher.");
+	return;
+    };
+    var content = fs.readFileSync('src/swb.txt');
+    if(content == '1' || content == '1\n') {
+	msg.channel.createMessage("**Due to circumstances, FGL Mod Mail is currently disabled.**\nPlease wait for some time while we sort out the issue and re-enable it. Use /modcall if it urgent.\nThank you for your patience\nThe FGL Staff Team");
+	return;
+	}
     // Private message handling is queued so e.g. multiple message in quick succession don't result in multiple channels being created
     messageQueue.add(async () => {
       let thread = await threads.findOpenThreadByUserId(msg.author.id);

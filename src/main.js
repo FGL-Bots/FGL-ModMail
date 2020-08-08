@@ -121,8 +121,7 @@ function initBaseMessageHandlers() {
     	await msg.channel.createMessage("**You have been blocked from FGL Mod Mail.**\nPlease either wait out the block if it isn't urgent or use modcall if it is. If you have a permanent block, DM a Bot Admin or higher.");
 	return;
     };
-    var content = fs.readFileSync('src/swb.txt');
-    if(content == '1' || content == '1\n') {
+    if(bot.swb === 1) {
 	msg.channel.createMessage("**Due to circumstances, FGL Mod Mail is currently disabled.**\nPlease wait for some time while we sort out the issue and re-enable it. Use /modcall if it urgent.\nThank you for your patience\nThe FGL Staff Team");
 	return;
 	}
@@ -150,6 +149,7 @@ function initBaseMessageHandlers() {
    * 1) If that message was in DMs, and we have a thread open with that user, post the edit as a system message in the thread
    * 2) If that message was moderator chatter in the thread, update the corresponding chat message in the DB
    */
+  bot.swb = 0; // By default, swb is off
   bot.on('messageUpdate', async (msg, oldMessage) => {
     if (! msg || ! msg.author) return;
     if (msg.author.bot) return;
